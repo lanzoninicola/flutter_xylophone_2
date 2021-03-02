@@ -23,22 +23,18 @@ class Notes extends StatefulWidget {
 
 class _NotesState extends State<Notes> {
   AudioPlayer _player;
-  AudioPlayer _player2;
-  String note;
 
-  @override
-  void initState() {
-    super.initState();
+  void playSound(int soundNumber) async {
+    print(soundNumber);
     _player = AudioPlayer();
-    _player2 = AudioPlayer();
-    _init();
+    _init(_player, soundNumber);
+    _player.setClip();
+    _player.play();
   }
 
-  _init() async {
-    print('init fired');
+  _init(AudioPlayer player, int soundNumber) async {
     try {
-      await _player.setAsset('assets/note1.wav');
-      await _player2.setAsset('assets/note2.wav');
+      await player.setAsset('assets/note$soundNumber.wav');
     } catch (e) {
       // catch load errors: 404, invalid url ...
       print("An error occured $e");
@@ -48,7 +44,6 @@ class _NotesState extends State<Notes> {
   @override
   void dispose() {
     _player.dispose();
-    _player2.dispose();
     super.dispose();
   }
 
@@ -58,8 +53,25 @@ class _NotesState extends State<Notes> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Note(label: 'play1', player: _player, color: Colors.green),
-          Note(label: 'play2', player: _player2, color: Colors.red)
+          Note(
+              widgetKey: 1,
+              playSound: playSound,
+              color: Colors.green),
+          Note(widgetKey: 2, playSound: playSound, color: Colors.red),
+          Note(
+              widgetKey: 3,
+              playSound: playSound,
+              color: Colors.yellow),
+          Note(
+              widgetKey: 4, playSound: playSound, color: Colors.teal),
+          Note(
+              widgetKey:5, playSound: playSound, color: Colors.blue),
+          Note(
+              widgetKey: 6,
+              playSound: playSound,
+              color: Colors.purple),
+          Note(
+              widgetKey: 7, playSound: playSound, color: Colors.grey),
         ],
       ),
     );
@@ -67,25 +79,19 @@ class _NotesState extends State<Notes> {
 }
 
 class Note extends StatelessWidget {
-  final String label;
-  final AudioPlayer player;
+  final widgetKey;
+  final playSound;
   final color;
 
-  const Note({this.label, this.color, this.player});
+  const Note({this.widgetKey, this.color, this.playSound});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: TextButton(
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(color)),
-        onPressed: () {
-          player.setClip();
-          player.play();
-        },
-        child: Text(
-          "$label",
-          style: TextStyle(color: Colors.white),
+      child: Container(
+        color: color,
+        child: GestureDetector(
+          onTap: () => {playSound(widgetKey)},
         ),
       ),
     );
